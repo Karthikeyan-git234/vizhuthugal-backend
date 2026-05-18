@@ -18,7 +18,6 @@ router.get(
           `
           SELECT *
           FROM school_reports
-          ORDER BY id DESC
           `
         );
 
