@@ -13,6 +13,9 @@ const workRoutes =
 const authRoutes =
   require('./routes/auth');
 
+  const schoolRoutes =
+  require('./routes/schools');
+
 const app = express();
 
 app.use(cors());
@@ -36,6 +39,11 @@ app.use(
 app.use(
   '/api/auth',
   authRoutes
+);
+
+app.use(
+  '/api/schools',
+  schoolRoutes
 );
 
 /* ===================================== */
