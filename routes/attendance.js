@@ -22,13 +22,19 @@ router.get(
           `
           SELECT *
           FROM attendance
+
           ORDER BY id DESC
           `
         )
 
-      res.status(200).json(
-        result.rows
-      )
+      res.status(200).json({
+
+        success: true,
+
+        data:
+          result.rows,
+
+      })
 
     } catch (error) {
 
@@ -63,12 +69,37 @@ router.post(
 
       const {
 
+        employee_id,
+
         employee_name,
+
+        role,
+
+        full_datetime,
 
       } = req.body
 
-      const now =
-        new Date()
+      /* ================================ */
+      /* VALIDATION */
+      /* ================================ */
+
+      if (
+        !employee_name
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            'Employee name required',
+
+        })
+      }
+
+      /* ================================ */
+      /* INSERT ATTENDANCE */
+      /* ================================ */
 
       const result =
         await pool.query(
@@ -76,21 +107,31 @@ router.post(
           `
           INSERT INTO attendance
           (
+
+            employee_id,
+
             employee_name,
+
+            role,
+
             check_in
+
           )
 
-          VALUES ($1, $2)
+          VALUES ($1, $2, $3, $4)
 
           RETURNING *
           `,
 
           [
 
-            employee_name ||
-            'Employee',
+            employee_id,
 
-            now,
+            employee_name,
+
+            role,
+
+            full_datetime,
 
           ]
         )
@@ -120,6 +161,79 @@ router.post(
 
         message:
           'Check In Failed',
+
+      })
+    }
+  }
+)
+
+/* ===================================== */
+/* CHECK OUT */
+/* ===================================== */
+
+router.put(
+
+  '/checkout/:id',
+
+  async (req, res) => {
+
+    try {
+
+      const { id } =
+        req.params
+
+      const now =
+        new Date()
+
+      const result =
+        await pool.query(
+
+          `
+          UPDATE attendance
+
+          SET
+
+          check_out = $1
+
+          WHERE id = $2
+
+          RETURNING *
+          `,
+
+          [
+
+            now,
+
+            id,
+
+          ]
+        )
+
+      res.status(200).json({
+
+        success: true,
+
+        message:
+          'Check Out Successful',
+
+        data:
+          result.rows[0],
+
+      })
+
+    } catch (error) {
+
+      console.log(
+        'CHECK OUT ERROR:',
+        error
+      )
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          'Check Out Failed',
 
       })
     }
@@ -239,6 +353,7 @@ router.delete(
 
         `
         DELETE FROM attendance
+
         WHERE id = $1
         `,
 
