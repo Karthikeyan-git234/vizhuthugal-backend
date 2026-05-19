@@ -4,35 +4,33 @@ const router = express.Router();
 
 const pool = require('../db');
 
-router.get(
+router.get('/', async (req, res) => {
 
-  '/',
+  try {
 
-  async (req, res) => {
+    console.log('Fetching schools...');
 
-    try {
+    const result = await pool.query(
+      'SELECT * FROM school_reports'
+    );
 
-      const result =
-        await pool.query(
+    console.log(result.rows);
 
-          `
-          SELECT *
-          FROM school_reports
-          `
-        );
+    res.json(result.rows);
 
-      res.json(result.rows);
+  } catch (error) {
 
-    } catch (error) {
+    console.log('FULL DB ERROR =>');
 
-      console.log(error);
+    console.log(error);
 
-      res.status(500).json({
+    res.status(500).json({
 
-        error: 'Server Error',
-      });
-    }
+      error: error.message,
+
+      full: error,
+    });
   }
-);
+});
 
 module.exports = router;
