@@ -1,74 +1,114 @@
-const express = require('express');
+const express = require('express')
 
-const cors = require('cors');
+const cors = require('cors')
 
-require('dotenv').config();
+require('dotenv').config()
+
+/* ===================================== */
+/* ROUTES IMPORT */
+/* ===================================== */
 
 const employeeRoutes =
-  require('./routes/employees');
+  require('./routes/employees')
 
 const workRoutes =
-  require('./routes/work');
+  require('./routes/work')
 
 const authRoutes =
-  require('./routes/auth');
+  require('./routes/auth')
 
-  const schoolRoutes =
-  require('./routes/schools');
+const schoolRoutes =
+  require('./routes/schools')
 
-const app = express();
-
-app.use(cors());
-
-app.use(express.json());
+const attendanceRoutes =
+  require('./routes/attendance')
 
 /* ===================================== */
-/* ROUTES */
+/* APP */
 /* ===================================== */
+
+const app = express()
+
+/* ===================================== */
+/* MIDDLEWARE */
+/* ===================================== */
+
+app.use(cors())
+
+app.use(express.json())
+
+/* ===================================== */
+/* API ROUTES */
+/* ===================================== */
+
+/* Employees */
 
 app.use(
   '/api/employees',
   employeeRoutes
-);
+)
+
+/* Work */
 
 app.use(
   '/api/work',
   workRoutes
-);
+)
+
+/* Auth */
 
 app.use(
   '/api/auth',
   authRoutes
-);
+)
+
+/* Schools */
 
 app.use(
   '/api/schools',
   schoolRoutes
-);
+)
+
+/* Attendance */
+
+app.use(
+  '/api/attendance',
+  attendanceRoutes
+)
 
 /* ===================================== */
 /* ROOT ROUTE */
 /* ===================================== */
 
-app.get('/', (req, res) => {
+app.get(
 
-  res.send(
-    'Vizhuthugal Backend Running Successfully 🚀'
-  );
+  '/',
 
-});
+  (req, res) => {
+
+    res.send(
+      'Vizhuthugal Backend Running Successfully 🚀'
+    )
+
+  }
+)
 
 /* ===================================== */
 /* SERVER */
 /* ===================================== */
 
+const PORT =
+  process.env.PORT || 5000
+
 app.listen(
-  process.env.PORT || 5000,
+
+  PORT,
+
   () => {
 
     console.log(
-      `Server Running On Port ${process.env.PORT}`
-    );
+      `✅ Server Running On Port ${PORT}`
+    )
 
   }
-);
+)
