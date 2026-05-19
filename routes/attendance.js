@@ -20,10 +20,36 @@ router.get(
         await pool.query(
 
           `
-          SELECT *
+          SELECT
+
+          attendance.id,
+
+          attendance.employee_id,
+
+          attendance.employee_name,
+
+          attendance.role,
+
+          attendance.check_in,
+
+          attendance.check_out,
+
+          attendance.work_done,
+
+          employees.email,
+
+          employees.department,
+
+          employees.designation
+
           FROM attendance
 
-          ORDER BY id DESC
+          LEFT JOIN employees
+
+          ON attendance.employee_id =
+          employees.id
+
+          ORDER BY attendance.id DESC
           `
         )
 
@@ -79,13 +105,7 @@ router.post(
 
       } = req.body
 
-      /* ================================ */
-      /* VALIDATION */
-      /* ================================ */
-
-      if (
-        !employee_name
-      ) {
+      if (!employee_name) {
 
         return res.status(400).json({
 
@@ -96,10 +116,6 @@ router.post(
 
         })
       }
-
-      /* ================================ */
-      /* INSERT ATTENDANCE */
-      /* ================================ */
 
       const result =
         await pool.query(
@@ -171,19 +187,21 @@ router.post(
 /* CHECK OUT */
 /* ===================================== */
 
-router.put(
+router.post(
 
-  '/checkout/:id',
+  '/checkout',
 
   async (req, res) => {
 
     try {
 
-      const { id } =
-        req.params
+      const {
 
-      const now =
-        new Date()
+        employee_id,
+
+        full_datetime,
+
+      } = req.body
 
       const result =
         await pool.query(
@@ -195,16 +213,18 @@ router.put(
 
           check_out = $1
 
-          WHERE id = $2
+          WHERE employee_id = $2
+
+          AND check_out IS NULL
 
           RETURNING *
           `,
 
           [
 
-            now,
+            full_datetime,
 
-            id,
+            employee_id,
 
           ]
         )
