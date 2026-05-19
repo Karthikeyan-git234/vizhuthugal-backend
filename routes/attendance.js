@@ -97,25 +97,51 @@ router.post(
 
         employee_id,
 
-        employee_name,
-
         role,
 
         full_datetime,
 
       } = req.body
 
-      if (!employee_name) {
+      /* ===================================== */
+      /* GET EMPLOYEE DETAILS */
+      /* ===================================== */
 
-        return res.status(400).json({
+      const employeeResult =
+        await pool.query(
+
+          `
+          SELECT *
+
+          FROM employees
+
+          WHERE id = $1
+          `,
+
+          [employee_id]
+
+        )
+
+      if (
+        employeeResult.rows.length === 0
+      ) {
+
+        return res.status(404).json({
 
           success: false,
 
           message:
-            'Employee name required',
+            'Employee Not Found',
 
         })
       }
+
+      const employee =
+        employeeResult.rows[0]
+
+      /* ===================================== */
+      /* INSERT ATTENDANCE */
+      /* ===================================== */
 
       const result =
         await pool.query(
@@ -141,11 +167,15 @@ router.post(
 
           [
 
-            employee_id,
+            employee.id,
 
-            employee_name,
+            employee.name,
 
-            role,
+            role ||
+
+            employee.role ||
+
+            'employee',
 
             full_datetime,
 
