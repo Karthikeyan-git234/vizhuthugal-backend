@@ -31,20 +31,25 @@ router.post('/login', async (req, res) => {
       })
     }
 
-    const employee = result.rows[0]
+    
+const employee =
+  result.rows[0]
 
-    /* ================================ */
-    /* PASSWORD CHECK — bcrypt          */
-    /* ================================ */
+const validPassword =
+  password ===
+  employee.password
 
-    const validPassword = await bcrypt.compare(password, employee.password)  // ✅ FIXED
+if (!validPassword) {
 
-    if (!validPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid Password',
-      })
-    }
+  return res.status(400).json({
+
+    success: false,
+
+    message:
+      'Invalid Password',
+
+  })
+}
 
     res.status(200).json({
       success: true,
@@ -228,7 +233,7 @@ router.get('/attendance/:employee_id', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch attendance',
-    })
+    })  
   }
 })
 
