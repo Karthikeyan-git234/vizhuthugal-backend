@@ -7,7 +7,7 @@ const pool = require('../db')
 const bcrypt = require('bcryptjs')
 
 /* ===================================== */
-/* REGISTER */
+/* REGISTER EMPLOYEE */
 /* ===================================== */
 
 router.post(
@@ -30,7 +30,9 @@ router.post(
 
       } = req.body
 
-      /* Validation */
+      /* ================================ */
+      /* VALIDATION */
+      /* ================================ */
 
       if (
         !name ||
@@ -48,14 +50,17 @@ router.post(
         })
       }
 
-      /* Check Existing User */
+      /* ================================ */
+      /* CHECK EXISTING EMPLOYEE */
+      /* ================================ */
 
-      const userExists =
+      const employeeExists =
         await pool.query(
 
           `
           SELECT *
-          FROM users
+          FROM employees
+
           WHERE email = $1
           `,
 
@@ -64,7 +69,7 @@ router.post(
         )
 
       if (
-        userExists.rows.length > 0
+        employeeExists.rows.length > 0
       ) {
 
         return res.status(400).json({
@@ -72,12 +77,14 @@ router.post(
           success: false,
 
           message:
-            'User already exists',
+            'Employee already exists',
 
         })
       }
 
-      /* Hash Password */
+      /* ================================ */
+      /* HASH PASSWORD */
+      /* ================================ */
 
       const hashedPassword =
         await bcrypt.hash(
@@ -88,13 +95,15 @@ router.post(
 
         )
 
-      /* Insert User */
+      /* ================================ */
+      /* INSERT EMPLOYEE */
+      /* ================================ */
 
       const result =
         await pool.query(
 
           `
-          INSERT INTO users
+          INSERT INTO employees
 
           (
             name,
@@ -131,9 +140,9 @@ router.post(
         success: true,
 
         message:
-          'Registration Successful',
+          'Employee Registered Successfully',
 
-        user:
+        employee:
           result.rows[0],
 
       })
@@ -177,7 +186,9 @@ router.post(
 
       } = req.body
 
-      /* Validation */
+      /* ================================ */
+      /* VALIDATION */
+      /* ================================ */
 
       if (
         !email ||
@@ -194,14 +205,17 @@ router.post(
         })
       }
 
-      /* Find User */
+      /* ================================ */
+      /* FIND EMPLOYEE */
+      /* ================================ */
 
       const result =
         await pool.query(
 
           `
           SELECT *
-          FROM users
+          FROM employees
+
           WHERE email = $1
           `,
 
@@ -223,17 +237,19 @@ router.post(
         })
       }
 
-      const user =
+      const employee =
         result.rows[0]
 
-      /* Compare Password */
+      /* ================================ */
+      /* COMPARE PASSWORD */
+      /* ================================ */
 
       const validPassword =
         await bcrypt.compare(
 
           password,
 
-          user.password
+          employee.password
 
         )
 
@@ -249,7 +265,9 @@ router.post(
         })
       }
 
-      /* Login Success */
+      /* ================================ */
+      /* LOGIN SUCCESS */
+      /* ================================ */
 
       res.status(200).json({
 
@@ -261,16 +279,16 @@ router.post(
         user: {
 
           id:
-            user.id,
+            employee.id,
 
           name:
-            user.name,
+            employee.name,
 
           email:
-            user.email,
+            employee.email,
 
           role:
-            user.role,
+            employee.role,
 
         }
 
