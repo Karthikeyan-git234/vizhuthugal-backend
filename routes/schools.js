@@ -21,6 +21,8 @@ router.get('/', async (req, res) => {
 // ─────────────────────────────────────────
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
+  console.log(`PUT /schools/${id} body =>`, req.body) // debug log
+
   const {
     district,
     block_name,
